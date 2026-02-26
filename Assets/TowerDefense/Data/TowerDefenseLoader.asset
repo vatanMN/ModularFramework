@@ -1,0 +1,23 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 716146fa2a0474369886e44d5deaa352, type: 3}
+  m_Name: TowerDefenseLoader
+  m_EditorClassIdentifier: Assembly-CSharp::TowerDefenseLoader
+  SceneName: TowerDefense
+  EnemyPrefab: {fileID: 1062907876497836643, guid: 71437a5dee4c349c5912571ace574290, type: 3}
+  ProjectilePrefab: {fileID: 2319043241623760745, guid: 52617004b4c40445796d195e9b8cfde7, type: 3}
+  SpawnInterval: 2
+  SpawnAccelerationPerMinute: 0.2
+  EnemyCollection: {fileID: 11400000, guid: 6f5934f52f04340b7a8dba21bf95f601, type: 2}
+  SpawnMode: 0
+  WaveModelIds: 
+  Waves: []

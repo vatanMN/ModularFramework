@@ -1,0 +1,39 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: dd8f73ded6a6141f083a30dbd8593dca, type: 3}
+  m_Name: EnemyCollection
+  m_EditorClassIdentifier: Assembly-CSharp::EnemyCollection
+  enemyModels:
+  - Id: 0
+    Type: 0
+    Sprite: {fileID: 6699089985201095850, guid: 6faadbaafab66424b9394ab80d5452c3, type: 3}
+    Speed: 100
+    Health: 10
+    Damage: 10
+    Reward: 10
+    Weight: 1
+  - Id: 1
+    Type: 1
+    Sprite: {fileID: -2390279811801854476, guid: 2a862606d74d841bd9ad7e2b4a5b84c6, type: 3}
+    Speed: 200
+    Health: 5
+    Damage: 10
+    Reward: 10
+    Weight: 1
+  - Id: 2
+    Type: 2
+    Sprite: {fileID: 4788237603754115770, guid: 9a320b7eb1e4842cbac8210ffdedff49, type: 3}
+    Speed: 50
+    Health: 15
+    Damage: 10
+    Reward: 10
+    Weight: 1
