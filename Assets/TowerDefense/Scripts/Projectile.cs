@@ -1,9 +1,12 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using ModularFW.Core.HapticService;
+using ModularFW.Core.PoolSystem;
 
-public class Projectile : MonoBehaviour
-{
+namespace MiniGame.TowerDefense {
+public class Projectile : MonoBehaviour{
+    public System.Action<Projectile> OnDestroyed;
     private Transform target;
     private float speed = 300f;
     private float damage = 10f;
@@ -59,6 +62,7 @@ public class Projectile : MonoBehaviour
                 var enemy = target.GetComponent<Enemy>();
                 if (enemy != null) enemy.ApplyDamage(damage);
                 // return to pool if available
+                OnDestroyed?.Invoke(this);
                 if (PoolingService.Instance != null)
                 {
                     PoolingService.Instance.Destroy(PoolEnum.Projectile, this.gameObject);
@@ -71,6 +75,7 @@ public class Projectile : MonoBehaviour
         // destroy after lifetime
         if (age >= lifeTime)
         {
+            OnDestroyed?.Invoke(this);
             if (PoolingService.Instance != null)
             {
                 PoolingService.Instance.Destroy(PoolEnum.Projectile, this.gameObject);
@@ -78,4 +83,5 @@ public class Projectile : MonoBehaviour
             else Destroy(this.gameObject);
         }
     }
+}
 }

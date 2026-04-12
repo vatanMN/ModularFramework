@@ -1,6 +1,9 @@
+using ModularFW.Core.HapticService;
 using UnityEngine;
 using UnityEngine.UI;
+using ModularFW.Core.AudioSystem;
 
+namespace ModularFW.Core.PanelSystem {
 public class SettingsPanel : BasePanel
 {
     public override PanelType PanelType => PanelType.SettingsPanel;
@@ -22,7 +25,7 @@ public class SettingsPanel : BasePanel
         if (AudioButtonText != null)
             AudioButtonText.text = AudioService.Instance != null && AudioService.Instance.AudioEnabled ? "Audio: On" : "Audio: Off";
         if (HapticButtonText != null)
-            HapticButtonText.text = HapticService.Instance != null && HapticService.Instance.HapticEnabled ? "Haptic: On" : "Haptic: Off";
+            HapticButtonText.text = ModularFW.Core.HapticService.HapticService.Instance != null && ModularFW.Core.HapticService.HapticService.Instance.HapticEnabled ? "Haptic: On" : "Haptic: Off";
     }
 
     private void ToggleAudio()
@@ -30,8 +33,8 @@ public class SettingsPanel : BasePanel
         // Play tick sound and haptic feedback
         if (AudioService.Instance != null)
             AudioService.Instance.Play(AudioEnum.Tick);
-        if (HapticService.Instance != null)
-            HapticService.Instance.PlayHaptic(HapticType.Success);
+        if (ModularFW.Core.HapticService.HapticService.Instance != null)
+            ModularFW.Core.HapticService.HapticService.Instance.PlayHaptic(HapticType.Success);
 
         if (AudioService.Instance != null)
         {
@@ -45,12 +48,12 @@ public class SettingsPanel : BasePanel
         // Play tick sound and haptic feedback
         if (AudioService.Instance != null)
             AudioService.Instance.Play(AudioEnum.Tick);
-        if (HapticService.Instance != null)
-            HapticService.Instance.PlayHaptic(HapticType.Success);
+        if (HapticService.HapticService.Instance != null)
+            HapticService.HapticService.Instance.PlayHaptic(HapticType.Success);
 
-        if (HapticService.Instance != null)
+        if (ModularFW.Core.HapticService.HapticService.Instance != null)
         {
-            HapticService.Instance.SetHapticEnabled(!HapticService.Instance.HapticEnabled);
+            ModularFW.Core.HapticService.HapticService.Instance.SetHapticEnabled(!ModularFW.Core.HapticService.HapticService.Instance.HapticEnabled);
             RefreshUI();
         }
     }
@@ -60,4 +63,5 @@ public class SettingsPanel : BasePanel
         if (AudioButton != null) AudioButton.onClick.RemoveListener(ToggleAudio);
         if (HapticButton != null) HapticButton.onClick.RemoveListener(ToggleHaptic);
     }
+}
 }

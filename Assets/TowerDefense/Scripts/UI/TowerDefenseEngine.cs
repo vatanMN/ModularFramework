@@ -1,7 +1,9 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using ModularFW.Core.PanelSystem;
 
+namespace MiniGame.TowerDefense {
 public class TowerDefenseEngine : MonoBehaviour
 {
     public Transform TowerPoint; // center tower transform
@@ -23,6 +25,7 @@ public class TowerDefenseEngine : MonoBehaviour
         towerManager = new TowerManager();
         spawnManager = new SpawnManager();
         upgradeManager = new UpgradeManager();
+        spawnManager.Engine = this; // set reference to engine for spawn manager
 
         // wire references
         towerManager.SpawnManager = spawnManager;
@@ -98,7 +101,7 @@ public class TowerDefenseEngine : MonoBehaviour
         // show restart button if available
         if (RestartButton != null) RestartButton.SetActive(true);
         // show fail panel
-        if (PanelService.Instance != null) PanelService.Instance.Show(PanelType.TowerDefenseFailPanel, "Your tower was destroyed");
+        if (PanelService.Instance != null) PanelService.Instance.Show(PanelType.TowerDefenseFailPanel, "Your tower was destroyed", this);
     }
 
     // Restart the game without touching currency
@@ -106,10 +109,23 @@ public class TowerDefenseEngine : MonoBehaviour
     {
         if (upgradeManager != null) upgradeManager.ResetAllUpgrades();
         // clear enemies and projectiles
-        var enemies = GameObject.FindObjectsOfType<Enemy>();
-        foreach (var e in enemies) GameObject.Destroy(e.gameObject);
-        var projs = GameObject.FindObjectsOfType<Projectile>();
-        foreach (var p in projs) GameObject.Destroy(p.gameObject);
+        // Use manager lists to clear enemies and projectiles
+        if (spawnManager != null)
+        {
+            foreach (var e in new List<Enemy>(spawnManager.ActiveEnemies))
+            {
+                if (e != null) GameObject.Destroy(e.gameObject);
+            }
+            spawnManager.ActiveEnemies.Clear();
+        }
+        if (towerManager != null)
+        {
+            foreach (var p in new List<Projectile>(towerManager.ActiveProjectiles))
+            {
+                if (p != null) GameObject.Destroy(p.gameObject);
+            }
+            towerManager.ActiveProjectiles.Clear();
+        }
 
         // reset managers
         if (upgradeManager != null) upgradeManager.ResetAllUpgrades();
@@ -183,4 +199,5 @@ public class TowerDefenseEngine : MonoBehaviour
         if (towerManager == null) return 0f;
         return towerManager.Range;
     }
+}
 }

@@ -2,6 +2,10 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
+using ModularFW.Core.Locator;
+using ModularFW.Core.AudioSystem;
+using ModularFW.Core.Signal;
+using ModularFW.Core.HapticService;     
 
 public class BackButton : MonoBehaviour
 {
@@ -22,6 +26,6 @@ public class BackButton : MonoBehaviour
     {
         if (AudioService.Instance != null) AudioService.Instance.Play(AudioEnum.Tick);
         if (HapticService.Instance != null) HapticService.Instance.PlayHaptic(HapticType.Success);
-        MiniGameService.Instance.UnloadMiniGame();
+        _ = MiniGameService.Instance.UnloadMiniGame();
     }
 }

@@ -1,17 +1,30 @@
+
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.SceneManagement;
 using System.Threading.Tasks;
 
-public class SystemLocator : MonoBehaviour
+using ModularFW.Core.AudioSystem;
+using ModularFW.Core.Signal;
+using ModularFW.Core.SaveSystem;
+using ModularFW.Core.PoolSystem;
+using ModularFW.Core.HapticService;
+using ModularFW.Core.InventorySystem;
+using ModularFW.Core.PanelSystem;
+using ModularFW.Core.CurrencySystem;
+
+namespace ModularFW.Core.Locator
+{
+
+    public class SystemLocator : MonoBehaviour
 {
     public static SystemLocator Instance
     {
         get {
             if (instance == null)
             {
-                instance = GameObject.FindObjectOfType<SystemLocator>();
+                instance = GameObject.FindFirstObjectByType<SystemLocator>();
                 if (!instance.isInit) instance.Init();
             }
             return instance;
@@ -38,7 +51,7 @@ public class SystemLocator : MonoBehaviour
     public SaveLoadService SaveLoadService;
     public CurrencyService CurrencyService;
     public AudioService AudioService;
-    public HapticService HapticService;
+    public HapticService.HapticService HapticService;
 
     public Transform PanelParent;
     public List<BasePanel> Panels;
@@ -54,7 +67,7 @@ public class SystemLocator : MonoBehaviour
         SaveLoadService = new SaveLoadService();
         await SaveLoadService.Initialize();
 
-        HapticService = new HapticService();
+        HapticService = new HapticService.HapticService();
         HapticService.Initialize();
 
         // currency service (depends on SaveLoadService)
@@ -81,6 +94,7 @@ public class SystemLocator : MonoBehaviour
         await SceneController.LoadScene("NavigationScene");
 
         isInit = true;
+    }
     }
 }
 

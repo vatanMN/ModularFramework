@@ -1,6 +1,8 @@
 using System.Threading.Tasks;
 using UnityEngine;
 using UnityEngine.SceneManagement;
+using ModularFW.Core.Locator;
+using ModularFW.Core.PanelSystem;
 
 public class SceneController : IService
 {

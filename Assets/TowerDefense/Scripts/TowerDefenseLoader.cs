@@ -1,6 +1,8 @@
 using UnityEngine;
 using System.Threading.Tasks;
 
+using ModularFW.Core.PanelSystem;
+namespace MiniGame.TowerDefense {
 [CreateAssetMenu(fileName = "TowerDefenseLoader", menuName = "Scriptable Objects/TowerDefenseLoader")]
 public class TowerDefenseLoader : BaseMiniGameLoader
 {
@@ -17,11 +19,13 @@ public class TowerDefenseLoader : BaseMiniGameLoader
     public System.Collections.Generic.List<int> WaveModelIds = new System.Collections.Generic.List<int>();
     public System.Collections.Generic.List<WaveDefinition> Waves = new System.Collections.Generic.List<WaveDefinition>();
 
+    private TowerDefenseEngine engine;
+
     public override async Task Load()
     {
-        PanelService.Instance.Show(PanelType.TowerDefenseGamePanel);
+        var panel = PanelService.Instance.Show<TowerDefenseGamePanel>(PanelType.TowerDefenseGamePanel);
 
-        var engine = GameObject.FindObjectOfType<TowerDefenseEngine>();
+        engine = panel.Engine;
             if (engine != null)
             {
                 engine.Initialize(EnemyPrefab, ProjectilePrefab, SpawnInterval, SpawnAccelerationPerMinute, EnemyCollection, SpawnMode, WaveModelIds, Waves);
@@ -32,8 +36,7 @@ public class TowerDefenseLoader : BaseMiniGameLoader
     }
 
     public override async Task Unload()
-    {
-        var engine = GameObject.FindObjectOfType<TowerDefenseEngine>();
+    {          
         if (engine != null)
         {
             engine.StopGame();
@@ -41,4 +44,5 @@ public class TowerDefenseLoader : BaseMiniGameLoader
         PanelService.Instance.Hide(PanelType.TowerDefenseGamePanel);
         await Task.Delay(1);
     }
+}
 }

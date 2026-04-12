@@ -4,7 +4,9 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.Events;
 using System.Threading.Tasks;
+using ModularFW.Core.Locator;
 
+namespace ModularFW.Core.PanelSystem {
 public class PanelService : IService
 {
     public static PanelService Instance => SystemLocator.Instance.PanelService;
@@ -27,7 +29,7 @@ public class PanelService : IService
         {
             CreatedPanels[item.PanelType] = item;
         }
-
+        await Task.Delay(1);
         IsReady = true;
     }
 
@@ -41,10 +43,22 @@ public class PanelService : IService
         CreatedPanels[panelType].Show(parameters);
     }
 
+    public T Show<T>(PanelType panelType, params object[] parameters) where T : BasePanel
+    {
+        if (!CreatedPanels.ContainsKey(panelType))
+        {
+            var panel = GameObject.Instantiate(PanelDic[panelType], PanelParent);
+            CreatedPanels[panelType] = panel;
+        }
+        CreatedPanels[panelType].Show(parameters);
+        return CreatedPanels[panelType] as T;
+    }
+
     public void Hide(PanelType panelType)
     {
         CreatedPanels[panelType].Hide();
     }
+}
 }
 
 public class PanelEvent : UnityEvent<PanelType> { };

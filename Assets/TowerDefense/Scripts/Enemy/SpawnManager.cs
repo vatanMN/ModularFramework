@@ -1,15 +1,19 @@
 using UnityEngine;
 using System.Collections.Generic;
+using ModularFW.Core.PoolSystem;
 
+namespace MiniGame.TowerDefense {
 public class SpawnManager
 {
-    private List<Enemy> activeEnemies = new List<Enemy>();
+    public List<Enemy> ActiveEnemies = new List<Enemy>();
     public enum SpawnMode { Random, Weighted, Wave }
 
     public GameObject EnemyPrefab;
     public Transform EnemyParent;
     public Transform TowerPoint;
     public EnemyCollection EnemyCollection;
+
+    public TowerDefenseEngine Engine; // reference to main engine for accessing config, etc.
 
     public float SpawnInterval = 2f;
     public float SpawnAccelerationPerMinute = 0.2f;
@@ -138,17 +142,17 @@ public class SpawnManager
             float intensity = Mathf.Clamp(enemy.Speed / 10f, 0.02f, 0.25f);
             float period = Mathf.Clamp(0.5f / (enemy.Speed / 5f), 0.15f, 0.8f);
             enemy.StartBoing(intensity, period);
-            if (!activeEnemies.Contains(enemy)) activeEnemies.Add(enemy);
+            if (!ActiveEnemies.Contains(enemy)) ActiveEnemies.Add(enemy);
             enemy.SpawnManager = this;
         }
     }
 
     public Transform GetClosestEnemy(Vector3 position)
     {
-        if (activeEnemies.Count == 0) return null;
+        if (ActiveEnemies.Count == 0) return null;
         Enemy best = null;
         float bestDist = float.MaxValue;
-        foreach (var e in activeEnemies)
+        foreach (var e in ActiveEnemies)
         {
             if (e == null) continue;
             float d = Vector3.Distance(e.transform.position, position);
@@ -210,7 +214,7 @@ public class SpawnManager
     public void StopManager()
     {
         isRunning = false;
-        activeEnemies.Clear();
+        ActiveEnemies.Clear();
         if (EnemyParent != null)
         {
             for (int i = EnemyParent.childCount - 1; i >= 0; i--)
@@ -224,6 +228,7 @@ public class SpawnManager
     // Called by EnemyDestroyNotifier when an enemy is destroyed
     public void NotifyEnemyDestroyed(Enemy enemy)
     {
-        activeEnemies.Remove(enemy);
+        ActiveEnemies.Remove(enemy);
     }
+}
 }

@@ -3,7 +3,11 @@ using System.Collections.Generic;
 using UnityEngine;
 using DG.Tweening;
 using UnityEngine.UI;
+using ModularFW.Core.HapticService;
+using ModularFW.Core.PoolSystem;
+using ModularFW.Core.CurrencySystem;
 
+namespace MiniGame.TowerDefense {
 public enum EnemyType { Basic, Fast, Tank }
 
 public class Enemy : MonoBehaviour{
@@ -155,12 +159,15 @@ public class Enemy : MonoBehaviour{
     {
         StopBoing();
         if (SpawnManager != null)
-                    SpawnManager.NotifyEnemyDestroyed(this);
-        var engine = UnityEngine.Object.FindObjectOfType<TowerDefenseEngine>();
-        if (engine != null)
         {
-            engine.ApplyDamageToTower(Damage);
+            SpawnManager.NotifyEnemyDestroyed(this);
+            var engine = SpawnManager.Engine;
+            if (engine != null)
+            {
+                engine.ApplyDamageToTower(Damage);
+            }
         }
+        
         // haptic for tower hit
         if (HapticService.Instance != null) HapticService.Instance.PlayHaptic(HapticType.Failure);
         if (PoolingService.Instance != null)
@@ -174,4 +181,5 @@ public class Enemy : MonoBehaviour{
     {
         if (boingTween != null) boingTween.Kill();
     }
+}
 }

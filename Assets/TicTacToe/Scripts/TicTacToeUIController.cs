@@ -2,7 +2,9 @@ using System;
 using UnityEngine;
 using UnityEngine.UI;
 using TMPro;
+using ModularFW.Core.Signal;
 
+namespace MiniGame.TicTacToe {
 public class TicTacToeUIController : MonoBehaviour
 {
     public TicTacToeEngine Engine;
@@ -11,12 +13,8 @@ public class TicTacToeUIController : MonoBehaviour
 
     void Start()
     {
-        if (Engine == null) Engine = FindObjectOfType<TicTacToeEngine>();
-        if (Engine != null)
-        {
-            SignalBus.Instance.Subscribe<TicTacToeGameEndedSignal>(OnGameEndedSignal);
+        SignalBus.Instance.Subscribe<TicTacToeGameEndedSignal>(OnGameEndedSignal);
             SignalBus.Instance.Subscribe<TicTacToeBoardUpdatedSignal>(OnBoardUpdatedSignal);
-        }
 
         if (RestartButton != null) RestartButton.onClick.AddListener(()=> {
             Engine?.StartGame();
@@ -42,4 +40,5 @@ public class TicTacToeUIController : MonoBehaviour
     {
         if (ResultText != null) ResultText.text = s.Message;
     }
+}
 }

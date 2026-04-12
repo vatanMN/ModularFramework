@@ -1,21 +1,12 @@
 using UnityEngine;
 using UnityEngine.UI;
 
+namespace MiniGame.TowerDefense {
 public class TowerRangeVisualizer : MonoBehaviour
 {
     public TowerDefenseEngine Engine;
     public Image RangeImage; // should be on a World Space Canvas or an Image with world-space transform
     public float ReferenceRadius = 1f; // radius (world units) represented by scale = 1 on the image
-    public bool AutoFindEngine = true;
-
-    void Start()
-    {
-        if (Engine == null && AutoFindEngine)
-            Engine = FindObjectOfType<TowerDefenseEngine>();
-
-        if (RangeImage == null)
-            RangeImage = GetComponent<Image>();
-    }
 
     void Update()
     {
@@ -32,4 +23,5 @@ public class TowerRangeVisualizer : MonoBehaviour
         float scale = range / refR;
         RangeImage.transform.localScale = new Vector3(scale, scale, 1f);
     }
+}
 }

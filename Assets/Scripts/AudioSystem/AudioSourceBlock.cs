@@ -1,6 +1,10 @@
+
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+
+namespace ModularFW.Core.AudioSystem
+{
 
 public class AudioSourceBlock : MonoBehaviour
 {
@@ -14,4 +18,6 @@ public class AudioSourceBlock : MonoBehaviour
         currentSoundSource++;
         currentSoundSource %= AudioSources.Count;
     }
+}
+
 }

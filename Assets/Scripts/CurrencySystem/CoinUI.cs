@@ -1,7 +1,10 @@
+using ModularFW.Core.PoolSystem;
 using UnityEngine;
 using UnityEngine.UI;
 using DG.Tweening;
+using ModularFW.Core.Signal;
 
+namespace ModularFW.Core.CurrencySystem {
 public class CoinUI : MonoBehaviour
 {
     public TMPro.TextMeshProUGUI CoinsText;
@@ -13,7 +16,7 @@ public class CoinUI : MonoBehaviour
         if (CoinsText == null) CoinsText = GetComponentInChildren<TMPro.TextMeshProUGUI>();
         CoinsText.text = CurrencyService.Instance != null ? CurrencyService.Instance.GetCoins().ToString() : "0";
         lastCoins = CurrencyService.Instance != null ? CurrencyService.Instance.GetCoins() : 0;
-        SignalBus.Instance.Subscribe<CoinsChangedSignal>(OnCoinsChangedSignal);
+          SignalBus.Instance.Subscribe<CoinsChangedSignal>(OnCoinsChangedSignal);
         parentCanvas = GetComponentInParent<Canvas>();
     }
 
@@ -64,4 +67,5 @@ public class CoinUI : MonoBehaviour
             PoolingService.Instance.Destroy(PoolEnum.FlyingCoin, fly.gameObject);
         }); 
     }
+}
 }

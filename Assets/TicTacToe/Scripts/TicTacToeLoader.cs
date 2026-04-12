@@ -1,6 +1,8 @@
 using UnityEngine;
 using System.Threading.Tasks;
+using ModularFW.Core.PanelSystem;
 
+namespace MiniGame.TicTacToe {
 [CreateAssetMenu(fileName = "TicTacToeLoader", menuName = "Scriptable Objects/TicTacToeLoader")]
 public class TicTacToeLoader : BaseMiniGameLoader
 {
@@ -9,9 +11,9 @@ public class TicTacToeLoader : BaseMiniGameLoader
 
     public override async Task Load()
     {
-        PanelService.Instance.Show(PanelType.TicTacToeGamePanel);
-        
-        var board =  GameObject.FindObjectOfType<TicTacToeEngine>();
+        var panel = PanelService.Instance.Show<TicTacToeGamePanel>(PanelType.TicTacToeGamePanel);
+
+        var board = panel.Engine;
         board.Initialize(1,1);
         board.CoinReward = RewardCoins;
         board.StartGame();
@@ -23,4 +25,5 @@ public class TicTacToeLoader : BaseMiniGameLoader
         PanelService.Instance.Hide(PanelType.TicTacToeGamePanel);
         await Task.Delay(1);
     }
+}
 }

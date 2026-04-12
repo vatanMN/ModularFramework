@@ -2,7 +2,9 @@ using System.Collections;
 using System.Collections.Generic;
 using Solo.MOST_IN_ONE;
 using UnityEngine;
+using ModularFW.Core.Locator;
 
+namespace ModularFW.Core.HapticService {
 public class HapticService : IService
 {
     private bool hapticEnabled = true;
@@ -21,15 +23,15 @@ public class HapticService : IService
 
     private void LoadSettings()
     {
-        var settings = SaveLoadService.Instance.GetData<SettingsData>(DataKey.Settings);
+        var settings = ModularFW.Core.SaveSystem.SaveLoadService.Instance.GetData<SettingsData>(DataKey.Settings);
         if (settings != null) hapticEnabled = settings.HapticEnabled;
     }
 
     private void SaveSettings()
     {
-        var settings = SaveLoadService.Instance.GetData<SettingsData>(DataKey.Settings) ?? new SettingsData();
+        var settings = ModularFW.Core.SaveSystem.SaveLoadService.Instance.GetData<SettingsData>(DataKey.Settings) ?? new SettingsData();
         settings.HapticEnabled = hapticEnabled;
-        SaveLoadService.Instance.Save(DataKey.Settings, settings, true);
+        ModularFW.Core.SaveSystem.SaveLoadService.Instance.Save(DataKey.Settings, settings, true);
     }
 
     public static HapticService Instance => SystemLocator.Instance.HapticService;
@@ -51,6 +53,7 @@ public class HapticService : IService
         }
 
     
+}
 }
 
 public enum HapticType

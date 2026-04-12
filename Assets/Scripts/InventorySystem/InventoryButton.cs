@@ -1,7 +1,7 @@
-using System.Collections;
-using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
+using ModularFW.Core.AudioSystem;
+using ModularFW.Core.PanelSystem;
 
 public class InventoryButton : MonoBehaviour
 {

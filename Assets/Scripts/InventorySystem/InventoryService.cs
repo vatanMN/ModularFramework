@@ -1,7 +1,13 @@
+// using ModularFW.Core.SaveSystem; (removed duplicate)
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using System.Threading.Tasks;
+using ModularFW.Core.Locator;
+using ModularFW.Core.SaveSystem;
+
+namespace ModularFW.Core.InventorySystem
+{
 
 public class InventoryService : IService
 {
@@ -16,6 +22,7 @@ public class InventoryService : IService
         ItemCollection = itemCollection;
         OwnItems = SaveLoadService.Instance.GetData<InventoryData>(DataKey.Inventory).OwnItems;
         IsReady = true;
+        await Task.Delay(1);
     }
     
     public ItemModel GetItemModel(int id)
@@ -61,4 +68,5 @@ public class InventoryService : IService
             OwnItems = OwnItems
         });
     }
+}
 }

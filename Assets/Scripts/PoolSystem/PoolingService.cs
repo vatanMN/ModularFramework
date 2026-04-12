@@ -2,7 +2,9 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using System.Threading.Tasks;
+using ModularFW.Core.Locator;
 
+namespace ModularFW.Core.PoolSystem {
 public class PoolingService : IService
 {
     
@@ -16,6 +18,7 @@ public class PoolingService : IService
     public async Task Initialize(PoolCollection poolCollection)
     {
         PoolCollection = poolCollection;
+        await Task.Delay(1);
         IsReady = true;
     }
 
@@ -56,4 +59,5 @@ public class PoolingService : IService
         gameObject.SetActive(false);
         WaitingObjects[poolEnum].Enqueue(gameObject);
     }
+}
 }

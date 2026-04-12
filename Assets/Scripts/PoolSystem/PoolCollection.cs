@@ -3,6 +3,9 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
+
+namespace ModularFW.Core.PoolSystem {
+
 [CreateAssetMenu(fileName = "PoolCollection", menuName = "Custom/PoolCollection")]
 public class PoolCollection : ScriptableObject
 {
@@ -35,5 +38,7 @@ public class PoolObject
 {
     public PoolEnum PoolEnum;
     public GameObject GameObject;
+}
+
 }
 

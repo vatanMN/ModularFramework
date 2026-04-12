@@ -3,6 +3,8 @@ using System.Threading.Tasks;
 using UnityEngine.SceneManagement;
 
 using System.Collections.Generic;
+using ModularFW.Core.Locator;
+using ModularFW.Core.PanelSystem;
 
 public class MiniGameService : IService
 {
@@ -18,7 +20,7 @@ public class MiniGameService : IService
         {
             Loaders[mg.MiniGameType] = mg;
         }
-
+        await Task.Delay(1);
         IsReady = true;
     }
 

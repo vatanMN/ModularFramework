@@ -1,6 +1,7 @@
 using UnityEngine;
 using System;
 
+namespace MiniGame.TowerDefense {
 [CreateAssetMenu(fileName = "TowerConfig", menuName = "TowerDefense/TowerConfig")]
 public class TowerConfig : ScriptableObject
 {
@@ -23,4 +24,5 @@ public class UpgradeInfo
 {
     public int Cost = 1;
     public float Amount = 1f;
+}
 }

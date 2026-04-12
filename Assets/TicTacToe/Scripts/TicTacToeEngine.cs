@@ -1,9 +1,16 @@
+using ModularFW.Core.InventorySystem;
+using ModularFW.Core.HapticService;
 using System;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using System.Threading.Tasks;
+using ModularFW.Core.Locator;
+using ModularFW.Core.Signal;
+using ModularFW.Core.PanelSystem;
+using ModularFW.Core.CurrencySystem;
 
+namespace MiniGame.TicTacToe {
 // Minimal TicTacToe gameplay engine. It is intentionally simple — UI hookup
 // should be done in prefabs. When the player (X) wins, it grants rewards via InventoryService.
 public class TicTacToeEngine : MonoBehaviour
@@ -164,4 +171,5 @@ public class TicTacToeEngine : MonoBehaviour
         for (int i = 0; i < cells.Length; i++) if (cells[i] == 0) return i;
         return -1;
     }
+}
 }

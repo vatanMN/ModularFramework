@@ -1,9 +1,13 @@
+using ModularFW.Core.HapticService;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
 using DG.Tweening;
+using ModularFW.Core.AudioSystem;
+using ModularFW.Core.Signal;
 
+namespace ModularFW.Core.PanelSystem {
 public abstract class BasePanel : MonoBehaviour
 {
     [SerializeField] protected Button CloseButton;
@@ -40,8 +44,8 @@ public abstract class BasePanel : MonoBehaviour
         {
             if (AudioService.Instance != null)
                 AudioService.Instance.Play(AudioEnum.Tick);
-            if (HapticService.Instance != null)
-                HapticService.Instance.PlayHaptic(HapticType.Success);
+            if (ModularFW.Core.HapticService.HapticService.Instance != null)
+                ModularFW.Core.HapticService.HapticService.Instance.PlayHaptic(HapticType.Success);
             if (canvasGroup == null) canvasGroup = GetOrAddCanvasGroup();
             // fade and scale down then deactivate
             canvasGroup.DOFade(0f, AnimationDuration).SetEase(Ease.InSine);
@@ -63,4 +67,5 @@ public abstract class BasePanel : MonoBehaviour
         if (cg == null) cg = gameObject.AddComponent<CanvasGroup>();
         return cg;
     }
+}
 }

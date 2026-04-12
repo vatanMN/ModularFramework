@@ -1,8 +1,14 @@
+using ModularFW.Core.PoolSystem;
 using UnityEngine;
 using DG.Tweening;
+using System.Collections.Generic;
+using ModularFW.Core.AudioSystem;
 
+namespace MiniGame.TowerDefense {
 public class TowerManager
 {
+    // Track active projectiles
+    public List<Projectile> ActiveProjectiles = new List<Projectile>();
     public Transform TowerPoint;
     public GameObject ProjectilePrefab;
 
@@ -70,12 +76,23 @@ public class TowerManager
             var projGO = GameObject.Instantiate(ProjectilePrefab, TowerPoint.position, Quaternion.identity, parent);
             proj = projGO.GetComponent<Projectile>();
         }
-        if (proj != null) proj.Initialize(target, Damage, ProjectileSpeed);
+        if (proj != null) {
+            proj.Initialize(target, Damage, ProjectileSpeed);
+            if (!ActiveProjectiles.Contains(proj)) ActiveProjectiles.Add(proj);
+            proj.OnDestroyed += RemoveProjectileFromList;
+        }
+           
         // play hit sound when projectile launched
         if (AudioService.Instance != null) AudioService.Instance.Play(AudioEnum.Hit);
         // tower boing feedback when shooting
         DoBoing(0.12f, 0.12f);
     }
+
+     // Remove projectile from list when destroyed
+        private void RemoveProjectileFromList(Projectile proj)
+        {
+            ActiveProjectiles.Remove(proj);
+        }
 
     public void ApplyConfig(TowerConfig cfg)
     {
@@ -129,4 +146,5 @@ public class TowerManager
     {
         isRunning = false;
     }
+}
 }

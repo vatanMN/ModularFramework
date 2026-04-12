@@ -1,13 +1,18 @@
+
 using System;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.Events;
+using ModularFW.Core.Locator;
+
+namespace ModularFW.Core.Signal
+{
 
 /// <summary>
 /// SignalBus managed by the SystemLocator. Use SignalBus.Instance to access the service.
 /// Example: SignalBus.Instance.Subscribe&lt;T&gt;(handler); SignalBus.Instance.Publish(new T());
 /// </summary>
-public class SignalBus : IService
+    public class SignalBus : IService
 {
     public static SignalBus Instance => SystemLocator.Instance.SignalBus;
 
@@ -75,6 +80,7 @@ public class SignalBus : IService
         Action<T> handler = (t) => unityEvent.Invoke(t);
         Subscribe(handler);
         return handler;
+    }
     }
 }
 

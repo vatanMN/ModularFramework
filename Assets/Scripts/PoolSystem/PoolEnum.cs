@@ -1,5 +1,8 @@
 ﻿using System;
 
+
+namespace ModularFW.Core.PoolSystem {
+
 public enum PoolEnum
 {
     ItemBox = 0,
@@ -8,5 +11,7 @@ public enum PoolEnum
     Enemy = 10,
     Projectile = 11,
     FlyingCoin = 12,
+
+}
 
 }

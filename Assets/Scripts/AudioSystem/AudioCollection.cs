@@ -1,10 +1,14 @@
+
 using System;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-[CreateAssetMenu(fileName = "AudioCollection", menuName = "Custom/AudioCollection")]
-public class AudioCollection : ScriptableObject
+namespace ModularFW.Core.AudioSystem
+{
+
+    [CreateAssetMenu(fileName = "AudioCollection", menuName = "Custom/AudioCollection")]
+    public class AudioCollection : ScriptableObject
 {
     [SerializeField] List<AudioElement> audioElements = new List<AudioElement>();
 
@@ -29,11 +33,12 @@ public class AudioCollection : ScriptableObject
         return audioElementsDic[auidoType];
     }
 
-}
+    }
 
-[Serializable]
-public class AudioElement
-{
-    public AudioEnum Type;
-    public AudioClip Clip;
+    [Serializable]
+    public class AudioElement
+    {
+        public AudioEnum Type;
+        public AudioClip Clip;
+    }
 }

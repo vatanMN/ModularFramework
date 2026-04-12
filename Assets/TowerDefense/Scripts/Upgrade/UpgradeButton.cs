@@ -1,8 +1,13 @@
+using ModularFW.Core.HapticService;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
+using ModularFW.Core.Signal;
+using ModularFW.Core.AudioSystem;
+using ModularFW.Core.CurrencySystem;
 
+namespace MiniGame.TowerDefense {
 public class UpgradeButton : MonoBehaviour
 {
     public TowerDefenseEngine.TowerUpgradeType Type;
@@ -13,6 +18,8 @@ public class UpgradeButton : MonoBehaviour
     public float FlashDuration = 0.5f;
     private Image buttonImage;
     private Color originalColor;
+
+    private TowerDefenseEngine engine;
     bool isStarted = true;
 
     void Start()
@@ -21,6 +28,7 @@ public class UpgradeButton : MonoBehaviour
         if (Button != null) Button.onClick.AddListener(OnClick);
         if (Button != null) buttonImage = Button.GetComponent<Image>();
         if (buttonImage != null) originalColor = buttonImage.color;
+        engine = FindFirstObjectByType<TowerDefenseEngine>();
         SignalBus.Instance.Subscribe<CoinsChangedSignal>(OnCoinsChangedSignal);
         SignalBus.Instance.Subscribe<UpgradesResetSignal>(OnUpgradesReset);
         UpdateInteractable(CurrencyService.Instance != null ? CurrencyService.Instance.GetCoins() : 0);
@@ -35,7 +43,6 @@ public class UpgradeButton : MonoBehaviour
     private void OnClick()
     {
         if (AudioService.Instance != null) AudioService.Instance.Play(AudioEnum.Tick);
-        var engine = FindObjectOfType<TowerDefenseEngine>();
         if (engine == null) return;
         // delegate upgrade attempt to engine (engine will spend currency)
         var ok = engine.TryUpgrade(Type);
@@ -54,7 +61,6 @@ public class UpgradeButton : MonoBehaviour
     private void UpdateInteractable(int coins)
     {
         if (Button == null) return;
-        var engine = FindObjectOfType<TowerDefenseEngine>();
         if (engine == null) { Button.interactable = false; return; }
         int cost = engine.GetUpgradeCost(Type);
         Button.interactable = coins >= cost;
@@ -90,4 +96,5 @@ public class UpgradeButton : MonoBehaviour
     {
         UpdateInteractable(CurrencyService.Instance != null ? CurrencyService.Instance.GetCoins() : 0);
     }
+}
 }

@@ -1,6 +1,10 @@
+
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using ModularFW.Core.PoolSystem;
+
+namespace ModularFW.Core.PoolSystem {
 
 public class ParticlePoolObject : MonoBehaviour
 {
@@ -17,4 +21,6 @@ public class ParticlePoolObject : MonoBehaviour
     {
         PoolingService.Instance.Destroy(PoolEnum, this.gameObject);
     }
+}
+
 }

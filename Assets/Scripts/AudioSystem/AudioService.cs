@@ -1,7 +1,15 @@
+using ModularFW.Core.SaveSystem;
+
 using System.Collections;
 using System.Collections.Generic;
 using System.Threading.Tasks;
 using UnityEngine;
+using ModularFW.Core.Locator;
+using ModularFW.Core.Signal;
+
+namespace ModularFW.Core.AudioSystem
+{
+
 
 public class AudioService: IService{
 
@@ -61,5 +69,7 @@ public class AudioService: IService{
         }
         AudioSourceBlock.PlayAudio(AudioCollection.GetAudioElement(audioType).Clip);
     }
+
+}
 
 }

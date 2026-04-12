@@ -2,7 +2,10 @@ using System;
 using UnityEngine;
 using UnityEngine.UI;
 using TMPro;
+using ModularFW.Core.Signal;
+using ModularFW.Core.AudioSystem;
 
+namespace MiniGame.TicTacToe {
 public class CellUI : MonoBehaviour
 {
     public int Index;
@@ -21,7 +24,6 @@ public class CellUI : MonoBehaviour
 
     void Start()
     {
-        if (Engine == null) Engine = FindObjectOfType<TicTacToeEngine>();
         SignalBus.Instance.Subscribe<TicTacToeBoardUpdatedSignal>(OnBoardUpdatedSignal);
         Refresh();
     }
@@ -69,4 +71,5 @@ public class CellUI : MonoBehaviour
         if (AudioService.Instance != null) AudioService.Instance.Play(AudioEnum.Tick);
         Engine?.PlayMove(Index);
     }
+}
 }

@@ -2,6 +2,7 @@ using UnityEngine;
 using UnityEngine.UI;
 using DG.Tweening;
 
+namespace MiniGame.TowerDefense {
 public class TowerHealthUI : MonoBehaviour
 {
     public TowerDefenseEngine Engine;
@@ -64,4 +65,5 @@ public class TowerHealthUI : MonoBehaviour
             BackgroundImage.DOColor(TakeDamageColor, 0.08f).OnComplete(() => BackgroundImage.DOColor(originalBgColor, 0.18f));
         }
     }
+}
 }

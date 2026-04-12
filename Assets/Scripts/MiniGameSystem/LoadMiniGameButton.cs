@@ -2,6 +2,8 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
+using ModularFW.Core.Locator;
+using ModularFW.Core.AudioSystem;
 
 public class LoadMiniGameButton : MonoBehaviour
 {
@@ -23,6 +25,6 @@ public class LoadMiniGameButton : MonoBehaviour
     void OnClick()
     {
         if (AudioService.Instance != null) AudioService.Instance.Play(AudioEnum.Tick);
-        MiniGameService.Instance.LoadMiniGame(MiniGameType);
+        _ = MiniGameService.Instance.LoadMiniGame(MiniGameType);
     }
 }

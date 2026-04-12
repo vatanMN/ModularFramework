@@ -4,6 +4,7 @@ using TMPro;
 using UnityEngine;
 using UnityEngine.UI;
 
+namespace ModularFW.Core.PanelSystem {
 public class InventoryObject : MonoBehaviour
 {
     [SerializeField] Image Icon;
@@ -21,4 +22,5 @@ public class InventoryObject : MonoBehaviour
     {
         Count.text = count.ToString();
     }
+}
 }

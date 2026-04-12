@@ -1,8 +1,12 @@
+using ModularFW.Core.SaveSystem;
 using System.Threading.Tasks;
 using UnityEngine;
 using System;
 using System.Collections.Generic;
+using ModularFW.Core.Locator;
+using ModularFW.Core.Signal;
 
+namespace ModularFW.Core.CurrencySystem {
 public class CurrencyService : IService
 {
     public static CurrencyService Instance => SystemLocator.Instance.CurrencyService;
@@ -30,7 +34,7 @@ public class CurrencyService : IService
         if (amount <= 0) return;
         coins += amount;
         Save();
-        SignalBus.Instance.Publish(new CoinsChangedSignal() { Coins = coins });
+           SignalBus.Instance.Publish(new CoinsChangedSignal() { Coins = coins });
     }
 
     public bool TrySpend(int amount)
@@ -40,7 +44,7 @@ public class CurrencyService : IService
         {
             coins -= amount;
             Save();
-            SignalBus.Instance.Publish(new CoinsChangedSignal() { Coins = coins });
+               SignalBus.Instance.Publish(new CoinsChangedSignal() { Coins = coins });
             return true;
         }
         return false;
@@ -72,4 +76,5 @@ public class CurrencyService : IService
             while (temp.Count > 0) coinUIStack.Push(temp.Pop());
         }
     }
+}
 }

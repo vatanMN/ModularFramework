@@ -1,5 +1,8 @@
-﻿public enum AudioEnum
+﻿namespace ModularFW.Core.AudioSystem
 {
-    Hit = 0,
-    Tick = 1,
+    public enum AudioEnum
+    {
+        Hit = 0,
+        Tick = 1,
+    }
 }

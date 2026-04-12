@@ -1,9 +1,12 @@
+using ModularFW.Core.InventorySystem;
+using ModularFW.Core.PoolSystem;
 using System;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
 
+namespace ModularFW.Core.PanelSystem {
 public class InventoryPanel : BasePanel
 {
     [SerializeField] GameObject Layout;
@@ -54,4 +57,5 @@ public class InventoryPanel : BasePanel
         inventoryObjects.Clear();
         Show();
     }
+}
 }

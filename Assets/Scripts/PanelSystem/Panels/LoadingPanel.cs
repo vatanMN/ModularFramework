@@ -1,5 +1,6 @@
 using UnityEngine;
 
+namespace ModularFW.Core.PanelSystem {
 public class LoadingPanel : BasePanel
 {
     public override PanelType PanelType => PanelType.LoadingPanel;
@@ -13,4 +14,5 @@ public class LoadingPanel : BasePanel
     {
         base.Hide();
     }
+}
 }

@@ -1,5 +1,10 @@
+using ModularFW.Core.SaveSystem;
+using ModularFW.Core.HapticService;
 using UnityEngine;
+using ModularFW.Core.Signal;
+using ModularFW.Core.CurrencySystem;
 
+namespace MiniGame.TowerDefense {
 public class UpgradeManager
 {
     public TowerManager TowerManager;
@@ -115,4 +120,5 @@ public class UpgradeManager
         // notify UI and interested parties that upgrades were reset
         if (SignalBus.Instance != null) SignalBus.Instance.Publish(new UpgradesResetSignal());
     }
+}
 }

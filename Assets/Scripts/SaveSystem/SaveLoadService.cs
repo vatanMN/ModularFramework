@@ -5,7 +5,9 @@ using System.Linq;
 using System.Threading.Tasks;
 using UnityEngine;
 using UnityEngine.Serialization;
+using ModularFW.Core.Locator;
 
+namespace ModularFW.Core.SaveSystem {
 public class SaveLoadService : IService
 {
     public static SaveLoadService Instance => SystemLocator.Instance.SaveLoadService;
@@ -31,6 +33,7 @@ public class SaveLoadService : IService
         LoadData();
         dirtyKeys.Capacity =data.Count;
         PeriodicSave();
+        await Task.Delay(1);
         IsReady = true;
     }
 
@@ -73,6 +76,7 @@ public class SaveLoadService : IService
         PlayerPrefs.Save();
         dirtyKeys.Clear();
     }
+}
 }
 
 public interface ISaveData

@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using UnityEngine;
 
+namespace MiniGame.TowerDefense {
 [CreateAssetMenu(fileName = "EnemyCollection", menuName = "Custom/EnemyCollection")]
 public class EnemyCollection : ScriptableObject
 {
@@ -60,5 +61,6 @@ public class EnemyModel
     public float Damage = 10f;
     public int Reward = 1;
     public int Weight = 1;
+}
 }
 

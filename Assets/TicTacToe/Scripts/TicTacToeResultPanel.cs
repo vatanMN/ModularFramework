@@ -1,7 +1,11 @@
 using UnityEngine;
 using UnityEngine.UI;
 using TMPro;
+using ModularFW.Core.Signal;
+using ModularFW.Core.AudioSystem;
+using ModularFW.Core.PanelSystem;
 
+namespace MiniGame.TicTacToe {
 public class TicTacToeResultPanel : BasePanel
 {
     public override PanelType PanelType => PanelType.TicTacToeResultPanel;
@@ -59,4 +63,5 @@ public class TicTacToeResultPanel : BasePanel
         }
         base.Hide();
     }
+}
 }
