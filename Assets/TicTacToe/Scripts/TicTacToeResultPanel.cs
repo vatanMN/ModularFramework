@@ -29,27 +29,16 @@ public class TicTacToeResultPanel : BasePanel
 
         if (RestartButton != null)
         {
+            RestartButton.onClick.RemoveAllListeners();
             RestartButton.onClick.AddListener(OnRestartClicked);
-            RestartButton.onClick.AddListener(() => {
-                if (AudioService.Instance != null) AudioService.Instance.Play(AudioEnum.Tick);
-            });
             RestartButton.gameObject.SetActive(true);
         }
     }
 
-    void OnDestroy()
-    {
-        if (RestartButton != null) RestartButton.onClick.RemoveListener(OnRestartClicked);
-    }
-
     private void OnRestartClicked()
     {
+        if (AudioService.Instance != null) AudioService.Instance.Play(AudioEnum.Tick);
         SignalBus.Instance.Publish(new TicTacToeRestartRequestedSignal());
-        base.Hide();
-    }
-
-    public override void Hide()
-    {
         base.Hide();
     }
 }

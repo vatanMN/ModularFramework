@@ -23,7 +23,7 @@ namespace ModularFW.Core.AudioSystem
         private AudioSourceBlock AudioSourceBlock;
         private AudioCollection AudioCollection;
 
-        public async Task Initialize(AudioCollection audioCollection, AudioSourceBlock audioSourceBlock)
+        public Task Initialize(AudioCollection audioCollection, AudioSourceBlock audioSourceBlock)
         {
             AudioCollection = audioCollection;
             AudioSourceBlock = audioSourceBlock;
@@ -32,7 +32,7 @@ namespace ModularFW.Core.AudioSystem
             LoadSettings();
             ApplyVolumes();
             IsReady = true;
-            await System.Threading.Tasks.Task.CompletedTask;
+            return Task.CompletedTask;
         }
 
         public void SetAudioEnabled(bool enabled)

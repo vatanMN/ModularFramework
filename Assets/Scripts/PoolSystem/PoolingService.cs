@@ -15,11 +15,23 @@ public class PoolingService : IService, ModularFW.Core.IPoolingService
 
     public bool IsReady { get; private set; }
 
-    public async Task Initialize(PoolCollection poolCollection)
+    public Task Initialize(PoolCollection poolCollection)
     {
         PoolCollection = poolCollection;
-        await Task.Delay(1);
+        foreach (var poolObj in PoolCollection.GetAllObjects())
+        {
+            if (poolObj.PrewarmCount <= 0) continue;
+            if (!WaitingObjects.ContainsKey(poolObj.PoolEnum))
+                WaitingObjects.Add(poolObj.PoolEnum, new Queue<GameObject>());
+            for (int i = 0; i < poolObj.PrewarmCount; i++)
+            {
+                var obj = GameObject.Instantiate(poolObj.GameObject);
+                obj.SetActive(false);
+                WaitingObjects[poolObj.PoolEnum].Enqueue(obj);
+            }
+        }
         IsReady = true;
+        return Task.CompletedTask;
     }
 
     public T Create<T>(PoolEnum poolEnum, Transform parent) where T : MonoBehaviour

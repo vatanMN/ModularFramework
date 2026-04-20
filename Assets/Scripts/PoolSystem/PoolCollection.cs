@@ -26,10 +26,11 @@ public class PoolCollection : ScriptableObject
 
     public GameObject GetGameObject(PoolEnum poolEnum)
     {
-        if (!isLoaded)
-            Load();
+        if (!isLoaded) Load();
         return objectsDic[poolEnum];
     }
+
+    public IReadOnlyList<PoolObject> GetAllObjects() => objects;
 
 }
 
@@ -38,6 +39,7 @@ public class PoolObject
 {
     public PoolEnum PoolEnum;
     public GameObject GameObject;
+    [Min(0)] public int PrewarmCount = 0;
 }
 
 }

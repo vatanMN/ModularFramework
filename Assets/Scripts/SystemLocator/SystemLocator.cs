@@ -92,12 +92,18 @@ namespace ModularFW.Core.Locator
 
         AnalyticsService = new AnalyticsService();
         await AnalyticsService.Initialize();
+        Register<AnalyticsService>(AnalyticsService);
+        Register<IAnalyticsService>(AnalyticsService);
 
         SaveLoadService = new SaveLoadService();
         await SaveLoadService.Initialize();
+        Register<SaveLoadService>(SaveLoadService);
+        Register<ISaveLoadService>(SaveLoadService);
 
         HapticService = new HapticService.HapticService();
         HapticService.Initialize();
+        Register<HapticService.HapticService>(HapticService);
+        Register<IHapticService>(HapticService);
 
         CurrencyService = new CurrencyService();
         await CurrencyService.Initialize();

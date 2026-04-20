@@ -23,14 +23,10 @@ public class TowerDefenseFailPanel : BasePanel
 
         if (RestartButton != null)
         {
+            RestartButton.onClick.RemoveAllListeners();
             RestartButton.onClick.AddListener(OnRestartClicked);
             RestartButton.gameObject.SetActive(true);
         }
-    }
-
-    void OnDestroy()
-    {
-        if (RestartButton != null) RestartButton.onClick.RemoveListener(OnRestartClicked);
     }
 
     private void OnRestartClicked()

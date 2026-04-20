@@ -1,6 +1,7 @@
 using System;
-using UnityEngine;
+using System.Threading;
 using System.Threading.Tasks;
+using UnityEngine;
 using ModularFW.Core.HapticService;
 using ModularFW.Core.InventorySystem;
 using ModularFW.Core.Signal;
@@ -22,6 +23,8 @@ public class TicTacToeEngine : MonoBehaviour
 
     private ITicTacToeAI _ai = new BlockingAI();
     private IDisposable _restartSub;
+    private CancellationTokenSource _aiCts;
+    private bool isWaiting = false;
 
     public void SetAI(ITicTacToeAI ai) => _ai = ai ?? new BlockingAI();
 
@@ -38,17 +41,22 @@ public class TicTacToeEngine : MonoBehaviour
 
     void OnDestroy()
     {
+        _aiCts?.Cancel();
+        _aiCts?.Dispose();
         _restartSub?.Dispose();
     }
 
     public void StartGame()
     {
+        _aiCts?.Cancel();
+        _aiCts?.Dispose();
+        _aiCts = null;
+        isWaiting = false;
         for (int i = 0; i < cells.Length; i++) cells[i] = 0;
         currentPlayer = 1;
         SignalBus.Instance.Publish(new TicTacToeBoardUpdatedSignal() { Board = (int[])cells.Clone() });
     }
 
-    bool isWaiting = false;
     public bool PlayMove(int index)
     {
         if (isWaiting) return false;
@@ -66,16 +74,29 @@ public class TicTacToeEngine : MonoBehaviour
         currentPlayer *= -1;
         if (currentPlayer == -1)
         {
-            AIMove();
+            _ = AIMove();
         }
         return true;
     }
 
-    private async void AIMove()
+    private async Task AIMove()
     {
+        _aiCts?.Cancel();
+        _aiCts?.Dispose();
+        _aiCts = new CancellationTokenSource();
+        var token = _aiCts.Token;
+
         isWaiting = true;
         int move = _ai.GetNextMove(cells, -1);
-        await Task.Delay(500);
+        try
+        {
+            await Task.Delay(500, token);
+        }
+        catch (OperationCanceledException)
+        {
+            isWaiting = false;
+            return;
+        }
         isWaiting = false;
         if (move >= 0) PlayMove(move);
         if (HapticService.Instance != null) HapticService.Instance.PlayHaptic(HapticType.Warning);
@@ -86,18 +107,16 @@ public class TicTacToeEngine : MonoBehaviour
         if (result == 1)
         {
             if (rewardItemId != NoRewardItemId)
-            {
                 InventoryService.Instance.GainItem(rewardItemId, rewardCount);
-            }
             if (CoinReward > 0 && CurrencyService.Instance != null)
             {
                 CurrencyService.Instance.AddCoins(CoinReward);
                 var coinUI = CurrencyService.Instance.GetActiveCoinUI();
                 if (coinUI != null)
                 {
-                    var boardCenter = boardTransform != null ? boardTransform.position : Vector3.zero;
                     if (boardTransform == null)
                         Debug.LogWarning("[TicTacToeEngine] boardTransform not assigned; coin spawn defaults to Vector3.zero.");
+                    var boardCenter = boardTransform?.position ?? Vector3.zero;
                     coinUI.SpawnFlyingCoin(boardCenter, CoinReward);
                 }
             }

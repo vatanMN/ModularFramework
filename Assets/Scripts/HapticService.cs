@@ -6,7 +6,7 @@ using ModularFW.Core.SaveSystem;
 
 namespace ModularFW.Core.HapticService
 {
-    public class HapticService : IService
+    public class HapticService : IService, ModularFW.Core.IHapticService
     {
         private bool hapticEnabled = true;
         public bool HapticEnabled => hapticEnabled;

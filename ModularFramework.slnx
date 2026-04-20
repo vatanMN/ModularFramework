@@ -1,4 +1,10 @@
 ﻿<Solution>
+  <Project Path="ModularFW.Core.csproj" />
   <Project Path="Assembly-CSharp.csproj" />
+  <Project Path="DOTweenModules.csproj" />
+  <Project Path="Tests.PlayMode.csproj" />
   <Project Path="Assembly-CSharp-Editor.csproj" />
+  <Project Path="MOST_Haptic.csproj" />
+  <Project Path="TicTacToe.AI.csproj" />
+  <Project Path="Tests.EditMode.csproj" />
 </Solution>

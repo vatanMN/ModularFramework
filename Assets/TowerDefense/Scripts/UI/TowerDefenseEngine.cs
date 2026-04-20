@@ -3,11 +3,12 @@ using System.Collections.Generic;
 using UnityEngine;
 using ModularFW.Core.PanelSystem;
 using ModularFW.Core.Signal;
+using ModularFW.Core.PoolSystem;
 
 namespace MiniGame.TowerDefense {
 public class TowerDefenseEngine : MonoBehaviour
 {
-    public Transform TowerPoint; // center tower transform
+    public Transform TowerPoint;
     public enum TowerUpgradeType { Damage, Range, FireRate, ProjectileSpeed }
 
     private TowerManager towerManager;
@@ -110,7 +111,11 @@ public class TowerDefenseEngine : MonoBehaviour
         {
             foreach (var e in new List<Enemy>(spawnManager.ActiveEnemies))
             {
-                if (e != null) GameObject.Destroy(e.gameObject);
+                if (e == null) continue;
+                if (PoolingService.Instance != null)
+                    PoolingService.Instance.Destroy(PoolEnum.Enemy, e.gameObject);
+                else
+                    Destroy(e.gameObject);
             }
             spawnManager.ActiveEnemies.Clear();
         }
@@ -118,14 +123,15 @@ public class TowerDefenseEngine : MonoBehaviour
         {
             foreach (var p in new List<Projectile>(towerManager.ActiveProjectiles))
             {
-                if (p != null) GameObject.Destroy(p.gameObject);
+                if (p == null) continue;
+                if (PoolingService.Instance != null)
+                    PoolingService.Instance.Destroy(PoolEnum.Projectile, p.gameObject);
+                else
+                    Destroy(p.gameObject);
             }
             towerManager.ActiveProjectiles.Clear();
         }
-
-        if (upgradeManager != null) upgradeManager.ResetAllUpgrades();
         if (TowerConfig != null) towerManager.ApplyConfig(TowerConfig);
-
         StartGame();
     }
 

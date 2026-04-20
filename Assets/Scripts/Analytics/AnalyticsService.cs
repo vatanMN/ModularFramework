@@ -12,7 +12,7 @@ namespace ModularFW.Core.Analytics
     /// GameLogger. Extend by forwarding TrackEvent to a backend (Firebase, Unity Analytics)
     /// without changing call sites.
     /// </summary>
-    public class AnalyticsService : IService
+    public class AnalyticsService : IService, ModularFW.Core.IAnalyticsService
     {
         public static AnalyticsService Instance => SystemLocator.Instance.AnalyticsService;
         public bool IsReady { get; private set; }

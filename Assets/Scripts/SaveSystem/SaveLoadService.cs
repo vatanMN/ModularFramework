@@ -9,7 +9,7 @@ using UnityEngine.Serialization;
 using ModularFW.Core.Locator;
 
 namespace ModularFW.Core.SaveSystem {
-public class SaveLoadService : IService
+public class SaveLoadService : IService, ModularFW.Core.ISaveLoadService
 {
     public static SaveLoadService Instance => SystemLocator.Instance.SaveLoadService;
     
@@ -54,11 +54,11 @@ public class SaveLoadService : IService
         else return default(T);
     }
 
-    public void Save<T>(DataKey key, T newData, bool isImmadiate = false) where T : ISaveData
+    public void Save<T>(DataKey key, T newData, bool immediate = false) where T : ISaveData
     {
         data[key].Update(newData);
         if(!dirtyKeys.Contains(key)) dirtyKeys.Add(key);
-        if (isImmadiate) SaveData();
+        if (immediate) SaveData();
     }
 
     private async Task PeriodicSave(CancellationToken cancellationToken)

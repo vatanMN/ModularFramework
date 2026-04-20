@@ -1763,6 +1763,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 66a915aa9c2494d8197aa2c241f782c6, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::TicTacToeEngine
+  boardTransform: {fileID: 7811770110143465111}
   CoinReward: 0
 --- !u!114 &1348779507699363701
 MonoBehaviour:
