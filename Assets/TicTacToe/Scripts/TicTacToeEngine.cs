@@ -1,31 +1,44 @@
-using ModularFW.Core.InventorySystem;
-using ModularFW.Core.HapticService;
 using System;
-using System.Collections;
-using System.Collections.Generic;
 using UnityEngine;
 using System.Threading.Tasks;
-using ModularFW.Core.Locator;
+using ModularFW.Core.HapticService;
+using ModularFW.Core.InventorySystem;
 using ModularFW.Core.Signal;
 using ModularFW.Core.PanelSystem;
 using ModularFW.Core.CurrencySystem;
 
 namespace MiniGame.TicTacToe {
-// Minimal TicTacToe gameplay engine. It is intentionally simple — UI hookup
-// should be done in prefabs. When the player (X) wins, it grants rewards via InventoryService.
 public class TicTacToeEngine : MonoBehaviour
 {
+    [SerializeField] private Transform boardTransform;
+
     private int[] cells = new int[9]; // 0 empty, 1 player X, -1 player O
     private int currentPlayer = 1;
 
-    private int rewardItemId = 0;
+    private const int NoRewardItemId = 0;
+    private int rewardItemId = NoRewardItemId;
     private int rewardCount = 1;
     public int CoinReward = 0;
+
+    private ITicTacToeAI _ai = new BlockingAI();
+    private IDisposable _restartSub;
+
+    public void SetAI(ITicTacToeAI ai) => _ai = ai ?? new BlockingAI();
 
     public void Initialize(int rewardItem, int rewardAmount)
     {
         rewardItemId = rewardItem;
         rewardCount = rewardAmount;
+    }
+
+    void Awake()
+    {
+        _restartSub = SignalBus.Instance.SubscribeTracked<TicTacToeRestartRequestedSignal>(_ => StartGame());
+    }
+
+    void OnDestroy()
+    {
+        _restartSub?.Dispose();
     }
 
     public void StartGame()
@@ -35,7 +48,6 @@ public class TicTacToeEngine : MonoBehaviour
         SignalBus.Instance.Publish(new TicTacToeBoardUpdatedSignal() { Board = (int[])cells.Clone() });
     }
 
-    // Call to play at index from external UI
     bool isWaiting = false;
     public bool PlayMove(int index)
     {
@@ -43,7 +55,6 @@ public class TicTacToeEngine : MonoBehaviour
         if (index < 0 || index >= cells.Length) return false;
         if (cells[index] != 0) return false;
         cells[index] = currentPlayer;
-        // haptic for player click only
         if (currentPlayer == 1 && HapticService.Instance != null) HapticService.Instance.PlayHaptic(HapticType.Success);
         SignalBus.Instance.Publish(new TicTacToeBoardUpdatedSignal() { Board = (int[])cells.Clone() });
         int res = CheckWin();
@@ -53,7 +64,6 @@ public class TicTacToeEngine : MonoBehaviour
             return true;
         }
         currentPlayer *= -1;
-        // simple AI move
         if (currentPlayer == -1)
         {
             AIMove();
@@ -63,13 +73,11 @@ public class TicTacToeEngine : MonoBehaviour
 
     private async void AIMove()
     {
-        isWaiting =true;
-        int ai = GetBestMove(-1);
-        await Task.Delay(500); // simulate thinking time
-
+        isWaiting = true;
+        int move = _ai.GetNextMove(cells, -1);
+        await Task.Delay(500);
         isWaiting = false;
-        if (ai >= 0) PlayMove(ai);
-        // haptic for AI click
+        if (move >= 0) PlayMove(move);
         if (HapticService.Instance != null) HapticService.Instance.PlayHaptic(HapticType.Warning);
     }
 
@@ -77,52 +85,43 @@ public class TicTacToeEngine : MonoBehaviour
     {
         if (result == 1)
         {
-            if (rewardItemId != 0)
+            if (rewardItemId != NoRewardItemId)
             {
                 InventoryService.Instance.GainItem(rewardItemId, rewardCount);
             }
-            // award coin reward if configured
             if (CoinReward > 0 && CurrencyService.Instance != null)
             {
                 CurrencyService.Instance.AddCoins(CoinReward);
-                // Animate flying coin to active CoinUI
                 var coinUI = CurrencyService.Instance.GetActiveCoinUI();
                 if (coinUI != null)
                 {
-                    // Use the center of the board as the world position for the coin spawn
-                    var boardCenter = Vector3.zero;
-                    var boardObj = GameObject.Find("TicTacToeBoard");
-                    if (boardObj != null)
-                        boardCenter = boardObj.transform.position;
+                    var boardCenter = boardTransform != null ? boardTransform.position : Vector3.zero;
+                    if (boardTransform == null)
+                        Debug.LogWarning("[TicTacToeEngine] boardTransform not assigned; coin spawn defaults to Vector3.zero.");
                     coinUI.SpawnFlyingCoin(boardCenter, CoinReward);
                 }
             }
             SignalBus.Instance.Publish(new TicTacToeGameEndedSignal() { Message = "You Win!" });
-            // show result panel with message and coin reward
-            if (PanelService.Instance != null) PanelService.Instance.Show(PanelType.TicTacToeResultPanel, "You Win!", CoinReward, this);
+            if (PanelService.Instance != null) PanelService.Instance.Show(PanelType.TicTacToeResultPanel, "You Win!", CoinReward);
         }
         else if (result == -1)
         {
             SignalBus.Instance.Publish(new TicTacToeGameEndedSignal() { Message = "You Lose" });
-            if (PanelService.Instance != null) PanelService.Instance.Show(PanelType.TicTacToeResultPanel, "You Lose", 0, this);
+            if (PanelService.Instance != null) PanelService.Instance.Show(PanelType.TicTacToeResultPanel, "You Lose", 0);
         }
         else
         {
             SignalBus.Instance.Publish(new TicTacToeGameEndedSignal() { Message = "Draw" });
-            if (PanelService.Instance != null) PanelService.Instance.Show(PanelType.TicTacToeResultPanel, "Draw", 0, this);
+            if (PanelService.Instance != null) PanelService.Instance.Show(PanelType.TicTacToeResultPanel, "Draw", 0);
         }
     }
 
-    // Expose read-only accessors and events for UI
     public int GetCellValue(int index)
     {
         if (index < 0 || index >= cells.Length) return 0;
         return cells[index];
     }
 
-    // events migrated to SignalBus: TicTacToeBoardUpdatedSignal, TicTacToeGameEndedSignal
-
-    // Returns 1 if X wins, -1 if O wins, 0 otherwise, 2 for draw
     private int CheckWin()
     {
         int[,] lines = new int[,] {
@@ -140,36 +139,6 @@ public class TicTacToeEngine : MonoBehaviour
         foreach (var v in cells) if (v == 0) anyEmpty = true;
         if (!anyEmpty) return 2;
         return 0;
-    }
-
-    private int GetBestMove(int player)
-    {
-        // try winning move
-        for (int i = 0; i < cells.Length; i++)
-        {
-            if (cells[i] == 0)
-            {
-                cells[i] = player;
-                int r = CheckWin();
-                cells[i] = 0;
-                if (r == player) return i;
-            }
-        }
-        // block opponent
-        int opp = -player;
-        for (int i = 0; i < cells.Length; i++)
-        {
-            if (cells[i] == 0)
-            {
-                cells[i] = opp;
-                int r = CheckWin();
-                cells[i] = 0;
-                if (r == opp) return i;
-            }
-        }
-        // first empty
-        for (int i = 0; i < cells.Length; i++) if (cells[i] == 0) return i;
-        return -1;
     }
 }
 }

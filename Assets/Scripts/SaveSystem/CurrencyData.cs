@@ -1,32 +1,40 @@
 using System;
 using UnityEngine;
 
-[Serializable]
-public class CurrencyData : ISaveData
+namespace ModularFW.Core.SaveSystem
 {
-    public int Coins = 0;
-
-    public string GetSaveable()
+    [Serializable]
+    public class CurrencyData : ISaveData
     {
-        return JsonUtility.ToJson(this);
-    }
+        private const int CurrentVersion = 1;
+        public int SaveVersion = CurrentVersion;
+        public int Coins = 0;
 
-    public void LoadData(string saved)
-    {
-        if (string.IsNullOrEmpty(saved)) return;
-        try
+        public string GetSaveable()
         {
-            var d = JsonUtility.FromJson<CurrencyData>(saved);
-            Coins = d.Coins;
+            return JsonUtility.ToJson(this);
         }
-        catch { }
-    }
 
-    public void Update<T>(T input) where T : ISaveData
-    {
-        if (input is CurrencyData cd)
+        public void LoadData(string saved)
         {
-            Coins = cd.Coins;
+            if (string.IsNullOrEmpty(saved)) return;
+            try
+            {
+                var parsed = JsonUtility.FromJson<CurrencyData>(saved);
+                if (parsed.SaveVersion != CurrentVersion)
+                    Debug.LogWarning($"[SaveLoad] CurrencyData version mismatch: expected {CurrentVersion}, got {parsed.SaveVersion}.");
+                Coins = parsed.Coins;
+            }
+            catch (Exception e)
+            {
+                Debug.LogError($"[SaveLoad] Failed to parse CurrencyData: {e.Message}");
+            }
+        }
+
+        public void Update<T>(T input) where T : ISaveData
+        {
+            if (input is CurrencyData currencyData)
+                Coins = currencyData.Coins;
         }
     }
 }

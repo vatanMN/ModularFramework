@@ -1,40 +1,38 @@
-using System.Collections;
 using System.Collections.Generic;
-using UnityEngine;
 
-public class InventoryData : ISaveData
+namespace ModularFW.Core.SaveSystem
 {
-    public Dictionary<int, int> OwnItems = new Dictionary<int, int>();
-    public string GetSaveable()
+    public class InventoryData : ISaveData
     {
-        var res = "";
-        foreach (var item in OwnItems)
-        {
-            res += item.Key + ":" + item.Value + ";";
-        }
-        return res;
-    }
+        public Dictionary<int, int> OwnItems = new Dictionary<int, int>();
 
-    public void LoadData(string saved)
-    {
-        string[] strAr = saved.Split(";");
-        foreach (var item in strAr)
+        public string GetSaveable()
         {
-            if(item.Length > 0)
+            var serialized = "";
+            foreach (var item in OwnItems)
+                serialized += item.Key + ":" + item.Value + ";";
+            return serialized;
+        }
+
+        public void LoadData(string saved)
+        {
+            string[] entries = saved.Split(";");
+            foreach (var entry in entries)
             {
-                string[] itemStr = item.Split(":");
-                OwnItems[int.Parse(itemStr[0])] = int.Parse(itemStr[1]);
+                if (entry.Length > 0)
+                {
+                    string[] parts = entry.Split(":");
+                    OwnItems[int.Parse(parts[0])] = int.Parse(parts[1]);
+                }
             }
         }
-    }
 
-    public void Update<T>(T input) where T : ISaveData
-    {
-        var classInput = input as InventoryData;
-        var newList = new Dictionary<int, int> (classInput.OwnItems);
-        foreach (var dId in newList)
+        public void Update<T>(T input) where T : ISaveData
         {
-            OwnItems[dId.Key] = dId.Value;
+            var typedInput = input as InventoryData;
+            var incomingItems = new Dictionary<int, int>(typedInput.OwnItems);
+            foreach (var item in incomingItems)
+                OwnItems[item.Key] = item.Value;
         }
     }
 }

@@ -35,10 +35,14 @@ namespace ModularFW.Core.AudioSystem
 
     }
 
+    public enum AudioCategory { Sfx, Music }
+
     [Serializable]
     public class AudioElement
     {
         public AudioEnum Type;
         public AudioClip Clip;
+        public AudioCategory Category = AudioCategory.Sfx;
+        [Range(0, 256)] public int Priority = 128;
     }
 }

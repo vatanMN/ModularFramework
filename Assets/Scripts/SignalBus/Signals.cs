@@ -37,4 +37,10 @@ namespace ModularFW.Core.Signal
     [Serializable]
     public class UpgradesResetSignal { }
 
+    [Serializable]
+    public class TicTacToeRestartRequestedSignal { }
+
+    [Serializable]
+    public class TowerDefenseRestartRequestedSignal { }
+
 }

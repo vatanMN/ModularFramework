@@ -5,7 +5,7 @@ using System.Threading.Tasks;
 using ModularFW.Core.Locator;
 
 namespace ModularFW.Core.PoolSystem {
-public class PoolingService : IService
+public class PoolingService : IService, ModularFW.Core.IPoolingService
 {
     
     public static PoolingService Instance => SystemLocator.Instance.PoolingService;
@@ -23,30 +23,39 @@ public class PoolingService : IService
     }
 
     public T Create<T>(PoolEnum poolEnum, Transform parent) where T : MonoBehaviour
+        => CreateInternal<T>(poolEnum, parent, 0);
+
+    private T CreateInternal<T>(PoolEnum poolEnum, Transform parent, int attempt) where T : MonoBehaviour
     {
+        const int maxAttempts = 3;
         if (!WaitingObjects.ContainsKey(poolEnum))
-        {
             WaitingObjects.Add(poolEnum, new Queue<GameObject>());
-        }
+
         if (WaitingObjects[poolEnum].Count < 1)
         {
             var obj = GameObject.Instantiate(PoolCollection.GetGameObject(poolEnum));
             obj.SetActive(false);
             WaitingObjects[poolEnum].Enqueue(obj);
-
         }
 
-        var res = WaitingObjects[poolEnum].Dequeue();
-        if(res == null || res.gameObject == null)
+        var pooledObject = WaitingObjects[poolEnum].Dequeue();
+        if (pooledObject == null || pooledObject.gameObject == null)
         {
-            return Create<T>( poolEnum,  parent);
+            if (attempt >= maxAttempts)
+            {
+                Debug.LogError($"[PoolingService] Failed to get valid object for {poolEnum} after {maxAttempts} attempts.");
+                return null;
+            }
+            return CreateInternal<T>(poolEnum, parent, attempt + 1);
         }
-        res.SetActive(true);
-        res.transform.SetParent(parent);
-        res.transform.localScale = Vector3.one;
+        pooledObject.SetActive(true);
+        pooledObject.transform.SetParent(parent);
+        pooledObject.transform.localScale = Vector3.one;
 
-        var res2 = res.GetComponent<T>();
-        return res2;
+        var component = pooledObject.GetComponent<T>();
+        if (component == null)
+            Debug.LogError($"[PoolingService] Object for pool {poolEnum} is missing component {typeof(T).Name}.");
+        return component;
     }
 
     public void Destroy(PoolEnum poolEnum, GameObject gameObject)

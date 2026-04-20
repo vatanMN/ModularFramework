@@ -7,7 +7,7 @@ using System.Threading.Tasks;
 using ModularFW.Core.Locator;
 
 namespace ModularFW.Core.PanelSystem {
-public class PanelService : IService
+public class PanelService : IService, ModularFW.Core.IPanelService
 {
     public static PanelService Instance => SystemLocator.Instance.PanelService;
     public bool IsReady { get; private set; }
@@ -56,7 +56,10 @@ public class PanelService : IService
 
     public void Hide(PanelType panelType)
     {
-        CreatedPanels[panelType].Hide();
+        if (CreatedPanels.TryGetValue(panelType, out var panel))
+            panel.Hide();
+        else
+            Debug.LogWarning($"[PanelService] Hide called on {panelType} which has not been shown.");
     }
 }
 }

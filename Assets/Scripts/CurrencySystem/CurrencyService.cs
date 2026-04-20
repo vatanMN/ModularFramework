@@ -7,7 +7,7 @@ using ModularFW.Core.Locator;
 using ModularFW.Core.Signal;
 
 namespace ModularFW.Core.CurrencySystem {
-public class CurrencyService : IService
+public class CurrencyService : IService, ModularFW.Core.ICurrencyService
 {
     public static CurrencyService Instance => SystemLocator.Instance.CurrencyService;
     public bool IsReady { get; private set; }

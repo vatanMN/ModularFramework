@@ -1,7 +1,8 @@
-using System.Collections;
+using System;
 using System.Collections.Generic;
 using UnityEngine;
 using ModularFW.Core.PanelSystem;
+using ModularFW.Core.Signal;
 
 namespace MiniGame.TowerDefense {
 public class TowerDefenseEngine : MonoBehaviour
@@ -9,7 +10,6 @@ public class TowerDefenseEngine : MonoBehaviour
     public Transform TowerPoint; // center tower transform
     public enum TowerUpgradeType { Damage, Range, FireRate, ProjectileSpeed }
 
-    // internal managers
     private TowerManager towerManager;
     private SpawnManager spawnManager;
     private UpgradeManager upgradeManager;
@@ -19,32 +19,35 @@ public class TowerDefenseEngine : MonoBehaviour
     public TowerHealthUI HealthUI;
 
     private bool isGameOver = false;
+    private IDisposable _restartSub;
 
     void Awake()
     {
         towerManager = new TowerManager();
         spawnManager = new SpawnManager();
         upgradeManager = new UpgradeManager();
-        spawnManager.Engine = this; // set reference to engine for spawn manager
+        spawnManager.Engine = this;
 
-        // wire references
         towerManager.SpawnManager = spawnManager;
         upgradeManager.TowerManager = towerManager;
-        // subscribe to tower death
         towerManager.OnTowerDestroyed += OnTowerDestroyed;
+
+        _restartSub = SignalBus.Instance.SubscribeTracked<TowerDefenseRestartRequestedSignal>(_ => RestartGame());
     }
 
-    // Initialize engine from loader (keeps previous API)
+    void OnDestroy()
+    {
+        _restartSub?.Dispose();
+    }
+
     public void Initialize(GameObject enemyPrefab, GameObject projectilePrefab, float spawnInterval, float spawnAccelerationPerMinute, EnemyCollection enemyCollection = null, SpawnManager.SpawnMode spawnMode = SpawnManager.SpawnMode.Weighted, System.Collections.Generic.List<int> waveModelIds = null, System.Collections.Generic.List<WaveDefinition> waves = null)
     {
-        // ensure TowerPoint
         if (TowerPoint == null)
         {
             var tp = GameObject.Find("TowerPoint");
             if (tp != null) TowerPoint = tp.transform;
         }
 
-        // apply to managers
         towerManager.TowerPoint = TowerPoint;
         towerManager.ParentTransform = this.transform;
         if (projectilePrefab != null) towerManager.ProjectilePrefab = projectilePrefab;
@@ -58,7 +61,6 @@ public class TowerDefenseEngine : MonoBehaviour
         spawnManager.Mode = spawnMode;
         if (waveModelIds != null) spawnManager.WaveModelIds = waveModelIds;
         if (waves != null) spawnManager.Waves = waves;
-        // store TowerConfig from loader if provided (loader should set public TowerConfig before Initialize)
     }
 
     public void StartGame()
@@ -96,20 +98,14 @@ public class TowerDefenseEngine : MonoBehaviour
     {
         isGameOver = true;
         StopGame();
-        // reset upgrades when tower destroyed
         if (upgradeManager != null) upgradeManager.ResetAllUpgrades();
-        // show restart button if available
         if (RestartButton != null) RestartButton.SetActive(true);
-        // show fail panel
-        if (PanelService.Instance != null) PanelService.Instance.Show(PanelType.TowerDefenseFailPanel, "Your tower was destroyed", this);
+        if (PanelService.Instance != null) PanelService.Instance.Show(PanelType.TowerDefenseFailPanel, "Your tower was destroyed");
     }
 
-    // Restart the game without touching currency
     public void RestartGame()
     {
         if (upgradeManager != null) upgradeManager.ResetAllUpgrades();
-        // clear enemies and projectiles
-        // Use manager lists to clear enemies and projectiles
         if (spawnManager != null)
         {
             foreach (var e in new List<Enemy>(spawnManager.ActiveEnemies))
@@ -127,17 +123,12 @@ public class TowerDefenseEngine : MonoBehaviour
             towerManager.ActiveProjectiles.Clear();
         }
 
-        // reset managers
         if (upgradeManager != null) upgradeManager.ResetAllUpgrades();
         if (TowerConfig != null) towerManager.ApplyConfig(TowerConfig);
-        // reset tower health
-        // (ApplyConfig above sets Health)
 
-        // restart
         StartGame();
     }
 
-    // expose tower health for UI
     public float GetTowerHealth()
     {
         if (towerManager == null) return 0f;
@@ -151,8 +142,6 @@ public class TowerDefenseEngine : MonoBehaviour
         return towerManager.Health;
     }
 
-    // Upgrade API exposed for UI (delegates to UpgradeManager)
-    // legacy signatures kept for compatibility (no-op)
     public void UpgradeDamage(float amount) { }
     public void UpgradeRange(float amount) { }
     public void UpgradeFireRate(float multiplier) { }
@@ -193,7 +182,6 @@ public class TowerDefenseEngine : MonoBehaviour
         }
     }
 
-    // expose tower range for UI/visualizers
     public float GetTowerRange()
     {
         if (towerManager == null) return 0f;

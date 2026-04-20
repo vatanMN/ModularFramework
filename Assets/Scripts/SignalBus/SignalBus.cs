@@ -12,7 +12,7 @@ namespace ModularFW.Core.Signal
 /// SignalBus managed by the SystemLocator. Use SignalBus.Instance to access the service.
 /// Example: SignalBus.Instance.Subscribe&lt;T&gt;(handler); SignalBus.Instance.Publish(new T());
 /// </summary>
-    public class SignalBus : IService
+    public class SignalBus : IService, ModularFW.Core.ISignalBus
 {
     public static SignalBus Instance => SystemLocator.Instance.SignalBus;
 
@@ -21,6 +21,12 @@ namespace ModularFW.Core.Signal
 
     public bool IsReady { get; private set; } = true;
 
+    /// <summary>
+    /// Subscribe to signal type T. The exact same handler instance must later be passed to
+    /// <see cref="Unsubscribe{T}"/>. If you are using a lambda, use
+    /// <see cref="SubscribeTracked{T}"/> instead — each lambda expression creates a new
+    /// delegate instance and <see cref="Unsubscribe{T}"/> will silently fail to remove it.
+    /// </summary>
     public void Subscribe<T>(Action<T> handler)
     {
         if (handler == null) throw new ArgumentNullException(nameof(handler));
@@ -53,6 +59,22 @@ namespace ModularFW.Core.Signal
         }
     }
 
+    /// <summary>
+    /// Subscribe and receive a disposable token. Disposing the token unsubscribes safely,
+    /// even when the handler was a lambda. Recommended over Subscribe+Unsubscribe for
+    /// anonymous methods and for MonoBehaviours that manage subscriptions in OnDestroy.
+    /// <code>
+    /// _sub = SignalBus.Instance.SubscribeTracked&lt;MySignal&gt;(s => Handle(s));
+    /// // later, e.g. in OnDestroy:
+    /// _sub?.Dispose();
+    /// </code>
+    /// </summary>
+    public IDisposable SubscribeTracked<T>(Action<T> handler)
+    {
+        Subscribe(handler);
+        return new Subscription(() => Unsubscribe(handler));
+    }
+
     public void Publish<T>(T signal)
     {
         Delegate d;
@@ -80,6 +102,13 @@ namespace ModularFW.Core.Signal
         Action<T> handler = (t) => unityEvent.Invoke(t);
         Subscribe(handler);
         return handler;
+    }
+
+    private sealed class Subscription : IDisposable
+    {
+        private Action _unsubscribe;
+        internal Subscription(Action unsubscribe) => _unsubscribe = unsubscribe;
+        public void Dispose() { _unsubscribe?.Invoke(); _unsubscribe = null; }
     }
     }
 }

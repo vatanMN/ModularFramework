@@ -9,7 +9,7 @@ using ModularFW.Core.SaveSystem;
 namespace ModularFW.Core.InventorySystem
 {
 
-public class InventoryService : IService
+public class InventoryService : IService, ModularFW.Core.IInventoryService
 {
 
     public static InventoryService Instance => SystemLocator.Instance.InventoryService;
@@ -52,7 +52,7 @@ public class InventoryService : IService
 
     public int GetOwnItemCount(int id)
     {
-        return OwnItems[id];
+        return OwnItems.TryGetValue(id, out var count) ? count : 0;
     }
 
     public void ResetOwnedItems()

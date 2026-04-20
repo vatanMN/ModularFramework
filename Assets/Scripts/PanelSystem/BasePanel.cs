@@ -14,8 +14,11 @@ public abstract class BasePanel : MonoBehaviour
 
     [Header("Animation")]
     public bool IsAnimated = true;
+    [Range(0f, 2f), Tooltip("Duration of show/hide tween in seconds. Override per panel prefab in the Inspector.")]
     public float AnimationDuration = 0.18f;
+    [Range(0.5f, 1.5f), Tooltip("Target scale when fully visible.")]
     public float ShowScale = 1.0f;
+    [Range(0f, 1f), Tooltip("Scale when hidden; panel shrinks to this before deactivating.")]
     public float HideScale = 0.9f;
 
     private CanvasGroup canvasGroup;
@@ -61,11 +64,18 @@ public abstract class BasePanel : MonoBehaviour
         }
     }
 
+    protected virtual void OnDisable()
+    {
+        transform.DOKill();
+        if (canvasGroup != null)
+            canvasGroup.DOKill();
+    }
+
     private CanvasGroup GetOrAddCanvasGroup()
     {
-        var cg = GetComponent<CanvasGroup>();
-        if (cg == null) cg = gameObject.AddComponent<CanvasGroup>();
-        return cg;
+        var group = GetComponent<CanvasGroup>();
+        if (group == null) group = gameObject.AddComponent<CanvasGroup>();
+        return group;
     }
 }
 }

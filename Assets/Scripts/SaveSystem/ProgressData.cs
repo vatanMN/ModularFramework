@@ -1,38 +1,39 @@
-using System.Collections;
 using System.Collections.Generic;
-using UnityEngine;
 
-public class ProgressData : ISaveData
+namespace ModularFW.Core.SaveSystem
 {
-    public int ActiveLevel;
-    public int PlayerLevel;
-    public int XP;
-    
-    public string GetSaveable()
+    public class ProgressData : ISaveData
     {
-        return ActiveLevel  +  "_" + PlayerLevel + "_" + XP;
-    }
+        public int ActiveLevel;
+        public int PlayerLevel;
+        public int XP;
 
-    public void LoadData(string saved)
-    {
-        var data = saved.Split('_');
-        if (data.Length < 2)
+        public string GetSaveable()
         {
-            ActiveLevel = 1;
-            PlayerLevel = 0;
-            XP = 0;
-            return;
+            return ActiveLevel + "_" + PlayerLevel + "_" + XP;
         }
-        ActiveLevel = int.Parse(data[0]);
-        PlayerLevel = int.Parse(data[1]);
-        XP = int.Parse(data[2]);
-    }
 
-    public void Update<T>(T input) where T : ISaveData
-    {
-        var classInput = input as ProgressData;
-        PlayerLevel = classInput.PlayerLevel;
-        XP = classInput.XP;
-        ActiveLevel = classInput.ActiveLevel;
+        public void LoadData(string saved)
+        {
+            var parts = saved.Split('_');
+            if (parts.Length < 3)
+            {
+                ActiveLevel = 1;
+                PlayerLevel = 0;
+                XP = 0;
+                return;
+            }
+            ActiveLevel = int.Parse(parts[0]);
+            PlayerLevel = int.Parse(parts[1]);
+            XP = int.Parse(parts[2]);
+        }
+
+        public void Update<T>(T input) where T : ISaveData
+        {
+            var typedInput = input as ProgressData;
+            PlayerLevel = typedInput.PlayerLevel;
+            XP = typedInput.XP;
+            ActiveLevel = typedInput.ActiveLevel;
+        }
     }
 }

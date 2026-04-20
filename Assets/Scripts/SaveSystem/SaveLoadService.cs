@@ -2,6 +2,7 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
+using System.Threading;
 using System.Threading.Tasks;
 using UnityEngine;
 using UnityEngine.Serialization;
@@ -16,7 +17,8 @@ public class SaveLoadService : IService
     private const string SAVE_FILE_PATH = "Save_";
     
     public bool IsReady { get; private set; }
-    
+    private CancellationTokenSource _saveCts;
+
     private Dictionary<DataKey, ISaveData> data = new Dictionary<DataKey, ISaveData>()
     {
         { DataKey.Progress, new ProgressData() },
@@ -31,10 +33,19 @@ public class SaveLoadService : IService
     public async Task Initialize()
     {
         LoadData();
-        dirtyKeys.Capacity =data.Count;
-        PeriodicSave();
+        dirtyKeys.Capacity = data.Count;
+        _saveCts = new CancellationTokenSource();
+        _ = PeriodicSave(_saveCts.Token);
         await Task.Delay(1);
         IsReady = true;
+    }
+
+    public void Shutdown()
+    {
+        _saveCts?.Cancel();
+        _saveCts?.Dispose();
+        _saveCts = null;
+        SaveData();
     }
 
     public T GetData<T>(DataKey key) where T : ISaveData
@@ -50,20 +61,28 @@ public class SaveLoadService : IService
         if (isImmadiate) SaveData();
     }
 
-    private async void PeriodicSave()
+    private async Task PeriodicSave(CancellationToken cancellationToken)
     {
-        while (true)
+        try
         {
-            await Task.Delay(savePeriod);
-            SaveData();
+            while (!cancellationToken.IsCancellationRequested)
+            {
+                await Task.Delay(savePeriod, cancellationToken);
+                SaveData();
+            }
+        }
+        catch (OperationCanceledException) { }
+        catch (Exception e)
+        {
+            Debug.LogError($"[SaveLoad] PeriodicSave error: {e.Message}");
         }
     }
 
     private void LoadData()
     {
-        foreach (var dataTupple in data)
+        foreach (var dataEntry in data)
         {
-            dataTupple.Value.LoadData(PlayerPrefs.GetString(SAVE_FILE_PATH + dataTupple.Key.ToString(),string.Empty));
+            dataEntry.Value.LoadData(PlayerPrefs.GetString(SAVE_FILE_PATH + dataEntry.Key.ToString(), string.Empty));
         }
     }
 
@@ -77,13 +96,11 @@ public class SaveLoadService : IService
         dirtyKeys.Clear();
     }
 }
-}
 
 public interface ISaveData
 {
     public string GetSaveable();
     public void LoadData(string saved);
-    public void Update <T>(T input) where T : ISaveData;
+    public void Update<T>(T input) where T : ISaveData;
 }
-
-
+}

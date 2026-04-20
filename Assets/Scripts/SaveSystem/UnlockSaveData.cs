@@ -1,41 +1,42 @@
-using System.Collections;
 using System.Collections.Generic;
-using UnityEngine;
 
-public class UnlockSaveData : ISaveData
+namespace ModularFW.Core.SaveSystem
 {
-    public List<string> UnlockedDrops;
-    public string GetSaveable()
+    public class UnlockSaveData : ISaveData
     {
-        string saveable = "";
-        
-        foreach (var dId in UnlockedDrops)
-        {
-            saveable += dId;
-            if(dId != UnlockedDrops[^1]) saveable += "/";
-        }
-        return saveable;
-    }
+        public List<string> UnlockedDrops;
 
-    public void LoadData(string saved)
-    {
-        var data = saved.Split('/');
-        UnlockedDrops = new List<string>();
-        foreach (var dId in data)
+        public string GetSaveable()
         {
-            if(string.IsNullOrEmpty(dId)) continue;
-            UnlockedDrops.Add(dId);
+            string saveable = "";
+            foreach (var dropId in UnlockedDrops)
+            {
+                saveable += dropId;
+                if (dropId != UnlockedDrops[^1]) saveable += "/";
+            }
+            return saveable;
         }
-    }
 
-    public void Update<T>(T input) where T : ISaveData
-    {
-        var classInput = input as UnlockSaveData;
-        var newList = new List<string>(classInput.UnlockedDrops);
-        foreach (var dId in newList)
+        public void LoadData(string saved)
         {
-            if(!UnlockedDrops.Contains(dId))
-                UnlockedDrops.Add(dId);
+            var segments = saved.Split('/');
+            UnlockedDrops = new List<string>();
+            foreach (var segment in segments)
+            {
+                if (string.IsNullOrEmpty(segment)) continue;
+                UnlockedDrops.Add(segment);
+            }
+        }
+
+        public void Update<T>(T input) where T : ISaveData
+        {
+            var typedInput = input as UnlockSaveData;
+            var incomingDrops = new List<string>(typedInput.UnlockedDrops);
+            foreach (var drop in incomingDrops)
+            {
+                if (!UnlockedDrops.Contains(drop))
+                    UnlockedDrops.Add(drop);
+            }
         }
     }
 }

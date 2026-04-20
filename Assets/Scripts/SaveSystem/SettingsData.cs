@@ -1,38 +1,50 @@
 using System;
 using UnityEngine;
 
-[Serializable]
-public class SettingsData : ISaveData
+namespace ModularFW.Core.SaveSystem
 {
-    public bool AudioEnabled = true;
-    public bool HapticEnabled = true;
-
-    public SettingsData() {}
-
-    public string GetSaveable()
+    [Serializable]
+    public class SettingsData : ISaveData
     {
-        return JsonUtility.ToJson(this);
-    }
+        public bool AudioEnabled = true;
+        public bool HapticEnabled = true;
+        public float MasterVolume = 1f;
+        public float SfxVolume = 1f;
+        public float MusicVolume = 1f;
 
-    public void LoadData(string saved)
-    {
-        if (!string.IsNullOrEmpty(saved))
+        public SettingsData() {}
+
+        public string GetSaveable()
         {
-            var loaded = JsonUtility.FromJson<SettingsData>(saved);
-            if (loaded != null)
+            return JsonUtility.ToJson(this);
+        }
+
+        public void LoadData(string saved)
+        {
+            if (!string.IsNullOrEmpty(saved))
             {
-                AudioEnabled = loaded.AudioEnabled;
-                HapticEnabled = loaded.HapticEnabled;
+                var loaded = JsonUtility.FromJson<SettingsData>(saved);
+                if (loaded != null)
+                {
+                    AudioEnabled = loaded.AudioEnabled;
+                    HapticEnabled = loaded.HapticEnabled;
+                    MasterVolume = loaded.MasterVolume;
+                    SfxVolume = loaded.SfxVolume;
+                    MusicVolume = loaded.MusicVolume;
+                }
             }
         }
-    }
 
-    public void Update<T>(T input) where T : ISaveData
-    {
-        if (input is SettingsData o)
+        public void Update<T>(T input) where T : ISaveData
         {
-            AudioEnabled = o.AudioEnabled;
-            HapticEnabled = o.HapticEnabled;
+            if (input is SettingsData settingsData)
+            {
+                AudioEnabled = settingsData.AudioEnabled;
+                HapticEnabled = settingsData.HapticEnabled;
+                MasterVolume = settingsData.MasterVolume;
+                SfxVolume = settingsData.SfxVolume;
+                MusicVolume = settingsData.MusicVolume;
+            }
         }
     }
 }
